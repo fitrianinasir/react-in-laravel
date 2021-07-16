@@ -17,17 +17,33 @@ class ArticleController extends Controller
         return $article->toJson();
     }
 
-    public function store(Request $requst){
-        $validatedData = $requst->validate([
+    public function store(Request $request){
+        $validatedData = $request->validate([
             'title' => 'required',
-            'content' => 'required'
+            'content' => 'required',
+            'file' => 'required|mimes:jpg,png,csv,txt|max:2048'
         ]);
 
-        $project = Article::create([
-            'title' => $validatedData['title'],
-            'content' => $validatedData['content']
-        ]);
+        // if($validatedData->fails()){
+        //     return response()->json(['error' => $validatedData->errors()], 401);
+        // }
 
+        if($file = $request->file('file')){
+            $path = $file->store('public/files');
+            $name = $file->getClientOriginalName();
+            
+            $project = Article::create([
+                'title' => $validatedData['title'],
+                'content' => $validatedData['content'],
+                'file' => $path
+            ]);
+        }
+    
+        // $project = Article::create([
+        //     'title' => $validatedData['title'],
+        //     'content' => $validatedData['content'],
+        //     'file' => $path
+        // ]);
         $msg = [
             'success' => true,
             'message' => 'Article created successfully'
@@ -36,6 +52,7 @@ class ArticleController extends Controller
         return response()->json($msg);
 
     }
+
 
     public function update(Request $requst, $id){
         $validatedData = $requst->validate([
@@ -56,6 +73,7 @@ class ArticleController extends Controller
         return response()->json($msg);
     }
 
+    
     public function delete($id){
         $article = Article::find($id);
         if(!empty($article)){

@@ -15,7 +15,7 @@ use App\Http\Controllers\ArticleController;
 */
 
 Route::get('/articles', [ArticleController::class, 'index']);
-Route::post('/article/store', 'ArticleController@store');
+Route::post('/article/store', [ArticleController::class, 'store']);
 Route::get('/article/edit/{id}', 'ArticleController@getArticle');
 // Route::get('/article/{id}', 'ArticleController@getArticle');
 Route::get('/article/{id}', 'ArticleController@update');
